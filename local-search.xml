@@ -24,5 +24,24 @@
   
   
   
+  <entry>
+    <title>Nacos-server-1.1.4适配MySQL8</title>
+    <link href="/2020/03/11/nacos-server-1-1-4-support-mysql8/"/>
+    <url>/2020/03/11/nacos-server-1-1-4-support-mysql8/</url>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在部署Nacos注册中心的时候，连接的MySQL是版本是8，配置了DB相关的信息以及执行了数据库脚本并且在服务器上启动服务，当一切都很顺利的时候，意外从此发生了。哈哈哈哈，本来想修改默认的密码，结果提交的时候并没什么反应，重试了好几次也没啥效果，凭着感觉按下F12，再提交一次，这时发现接口报500。<br><img src="/img/2020/03/11/1.png" srcset="/img/loading.gif" alt=""><br>既然是接口异常，那就上服务器查看一下日志<br><img src="/img/2020/03/11/2.png" srcset="/img/loading.gif" alt=""><br>经过一顿操作，发现时Nacos的驱动包与MySQL版本不兼容。</p><h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>我的解决方法是，download源码，修改驱动版本，然后用maven重新编译这个过程去获得一个新的而且支持MySQL8的Nacos-server-1.1.4.jar。</p><p><strong>1.下载源码</strong></p><p>通过全球最大的交友网站<a href="https://github.com/alibaba/nacos/tree/1.1.4" target="_blank" rel="noopener">Github</a>去拉去代码到本地。然后导入到IDEA，这时，你需要经历一漫长的maven导包过程。</p><p>2000 years later</p><p><strong>2.修改驱动版本</strong></p><p>将pom.xml文件的mysql驱动包作如下修改</p><pre><code class="xml">&lt;!-- 原有的版本 --&gt;&lt;dependency&gt;    &lt;groupId&gt;mysql&lt;/groupId&gt;    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;    &lt;version&gt;5.1.34&lt;/version&gt;&lt;/dependency&gt;&lt;!-- 修改后的版本 --&gt;&lt;dependency&gt;    &lt;groupId&gt;mysql&lt;/groupId&gt;    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;    &lt;version&gt;8.0.17&lt;/version&gt;&lt;/dependency&gt;</code></pre><p>修改完pom.xml文件，还重新导入<strong>naming</strong>模块下的<strong>com.alibaba.nacos.naming.healthcheck.MysqlHealthCheckProcessor</strong>的MysqlDataSource</p><pre><code class="java">// 原来的 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;// 改成import com.mysql.cj.jdbc.MysqlDataSource;</code></pre><p><strong>3.重新编译</strong></p><p>此时，只需要重新编译一下nacos的源码即可</p><pre><code>mvn -Prelease-nacos -DskipTests clean install -U</code></pre><p>2000 years later</p><p>编译完成后，在<strong>distribution</strong>模块中的target目录下即可找到nacos-server.jar。</p><p><strong>4.重新部署</strong></p><p>部署的方法很简单，在服务器原来解压后的目录下并且进入target子目录，重新上传并替换掉nacos-server.jar。此时离成功就只差一步了，那就是修改配置文件</p><pre><code>spring.datasource.platform=mysqldb.num=1db.url.0=jdbc:mysql://ip:port/nacos_qa?characterEncoding=utf8&amp;connectTimeout=1000&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=Asia/Shanghaidb.user=db.password=</code></pre><p>最后进入bin目录，执行命令启动就可以了</p><pre><code class="shell">sh startup.sh -m standalone</code></pre>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>笔记</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
   
 </search>
