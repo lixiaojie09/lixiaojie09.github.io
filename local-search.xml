@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>记录使用Hexo搭建博客</title>
+    <link href="/2020/04/12/used-by-hexo-github-to-build-blog/"/>
+    <url>/2020/04/12/used-by-hexo-github-to-build-blog/</url>
+    
+    <content type="html"><![CDATA[<p>本文章记录使用Hexo搭建个人博客以及部分使用技巧</p><a id="more"></a><h2 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h2><h3 id="安装Hexo以及启动服务"><a href="#安装Hexo以及启动服务" class="headerlink" title="安装Hexo以及启动服务"></a>安装Hexo以及启动服务</h3><ul><li>安装</li></ul><pre><code>npm install -g hexo</code></pre><ul><li>初始化hexo目录</li></ul><pre><code>cd ..进入目录hexo init</code></pre><p>等待拉去github上的hexo项目，拉去完成后的项目结构如下<br> <img src="/img/2020/04/12/1.png" srcset="/img/loading.gif" alt="image"></p><ul><li>生成public文件夹</li></ul><pre><code>hexo g #在public文件夹生成相关html文件</code></pre><p>执行 hexo g命令后，会创建一个public的文件夹，里面的html将来都是要提交到github去的。<br><img src="/img/2020/04/12/2.png" srcset="/img/loading.gif" alt="image"></p><ul><li>启动服务</li></ul><pre><code>hexo s #启动hexo服务</code></pre><p>启动完成后，在浏览器中输入<a href="http://localhost:4000" target="_blank" rel="noopener">http://localhost:4000</a>可以访问到启动的hexo服务</p><p> <img src="/img/2020/04/12/3.png" srcset="/img/loading.gif" alt="image"></p><h3 id="Hexo更换皮肤"><a href="#Hexo更换皮肤" class="headerlink" title="Hexo更换皮肤"></a>Hexo更换皮肤</h3><p>首先去<a href="https://hexo.io/themes/" target="_blank" rel="noopener">Hexo皮肤库</a>物色一个心仪的皮肤，个人觉得ht<a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="noopener">hexo-theme-fluid</a>这个皮肤炫酷，就以这个为例更换皮肤。</p><ul><li>先进入本地hexo文件夹，执行以下命令拉皮肤源码</li></ul><pre><code>git clone https://github.com/fluid-dev/hexo-theme-fluid.git themes/fluid</code></pre><p>拉取源码完成后，在themes目录下（该目录时所有皮肤的存放目录）</p><ul><li>换皮肤</li></ul><p>修改根目录下的_config.yml文件</p><pre><code>theme: fluid  # 指定主题language: zh-CN  # 指定语言，可不改</code></pre><ul><li>重新启动</li></ul><pre><code>hexo cleanhexo ghexo s</code></pre><ul><li>重启后就焕然一新了<br><img src="/img/2020/04/12/4.png" srcset="/img/loading.gif" alt="image"></li></ul><h3 id="常用hexo命令"><a href="#常用hexo命令" class="headerlink" title="常用hexo命令"></a>常用hexo命令</h3><pre><code>hexo new &quot;postName&quot; #新建文章hexo new page &quot;pageName&quot; #新建页面hexo generate #生成静态页面至public目录hexo server #开启预览访问端口（默认端口4000，&#39;ctrl + c&#39;关闭server）hexo deploy #部署到GitHubhexo help  # 查看帮助hexo version  #查看Hexo的版本## 缩写hexo n == hexo newhexo g == hexo generatehexo s == hexo serverhexo d == hexo deploy## 组合命令hexo s -g #生成并本地预览hexo d -g #生成并上传</code></pre><h3 id="config-yml"><a href="#config-yml" class="headerlink" title="_config.yml"></a>_config.yml</h3><p>全局配置</p><h2 id="创作新文章"><a href="#创作新文章" class="headerlink" title="创作新文章"></a>创作新文章</h2><p>进入到我们的hexo项目根目录，执行以下命令</p><pre><code>hexo new &#39;new bloger page&#39;</code></pre><p>hexo会帮我们在_posts下生成相关md文件，我们只需要打开这个文件就可以开始写博客了。</p><p>一般完整格式如下</p><pre><code>---title: first page #文章页面上的显示名称，一般是中文date: 2020-04-12 01:04:14 #文章生成时间，一般不改，当然也可以任意修改tags: #文章标签，可空，多标签请用格式，注意:后面有个空格categories: 默认分类 #分类description: 附加一段文章摘要，字数最好在140字以内，会出现在meta的description里面---以下是正文</code></pre><p>如何让博文列表不显示全部内容<br>默认情况下，生成的博文目录会显示全部的文章内容，位置加上</p><pre><code>&lt;!--more--&gt;</code></pre><h2 id="当前主题的官网以及使用文档"><a href="#当前主题的官网以及使用文档" class="headerlink" title="当前主题的官网以及使用文档"></a>当前主题的官网以及使用文档</h2><p><a href="https://hexo.fluid-dev.com/docs" target="_blank" rel="noopener">官网</a></p><p><a href="https://hexo.fluid-dev.com/docs/guide/" target="_blank" rel="noopener">使用文档</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Hexo</tag>
+      
+      <tag>笔记</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
