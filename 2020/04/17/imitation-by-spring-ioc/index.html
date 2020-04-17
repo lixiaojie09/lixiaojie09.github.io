@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="lixiaojie09">
+  <meta name="keywords" content="">
+  <title>用最简单的方法仿写Spring IOC - 李同学以后不熬夜</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/3.0.1/github-markdown.min.css" />
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_9n5xqdrq0nc.css">
+
+
+
+  <link  rel="stylesheet" href="/lib/prettify/tomorrow-night-eighties.min.css" />
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>李同学以后不熬夜</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg/car_bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-04-17 22:42">
+                    星期五, 四月 17日 2020, 10:42 晚上
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.5k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    22
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="粗谈IOC和DI"><a href="#粗谈IOC和DI" class="headerlink" title="粗谈IOC和DI"></a>粗谈IOC和DI</h1><p>IOC（Inversion of Control，即控制反转）是把代码里需要用到的对象进行创建，放到容器中进行管理，并且令容器知道创建的对象与对象的依赖关系。一句话来说，就是要什么，我给你。</p>
+<p>DI （Dependency Injection，即依赖注入）是指对象被动的接受依赖类，而不是对象主动去查找依赖类。一句话概括，就是我要的你给我。</p>
+<h1 id="仿写实现"><a href="#仿写实现" class="headerlink" title="仿写实现"></a>仿写实现</h1><h2 id="项目结构以及实现思路"><a href="#项目结构以及实现思路" class="headerlink" title="项目结构以及实现思路"></a>项目结构以及实现思路</h2><p><img src="/img/2020/04/17/1.png" srcset="/img/loading.gif" alt="项目结构"></p>
+<ol>
+<li>@Component注解是将带该注解的类注册成Bean，并放到IOC容器中，@Autowired注解是依赖注入属性</li>
+<li>BeanFactory中的initBeanFactory()方法是初始化IOC容器，该方法会依次执行initBeanDefinition()、dependencyInjection()</li>
+<li>initBeanDefinition()是通过扫描指定包路径下的带有@Component的类注册到beanMap中</li>
+<li>dependencyInjection()是通过已注册的bean依赖注入带@Autowired注解的属性实例。</li>
+<li>初始化完成后，调用BeanFactory.getBean()拿到Bean</li>
+</ol>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><h3 id="Component、-Autowired注解"><a href="#Component、-Autowired注解" class="headerlink" title="@Component、@Autowired注解"></a>@Component、@Autowired注解</h3><pre><code class="java">@Retention(RUNTIME)
+@Target({FIELD})
+public @interface Autowired {
+}</code></pre>
+<pre><code class="java">@Retention(RUNTIME)
+@Target({TYPE})
+public @interface Component {
+    int priority() default Integer.MAX_VALUE - 1;
+}</code></pre>
+<h3 id="BeanFactory实现"><a href="#BeanFactory实现" class="headerlink" title="BeanFactory实现"></a>BeanFactory实现</h3><pre><code class="java">@Slf4j
+public class BeanFactory {
+
+    private static Map&lt;Class&lt;?&gt;, List&lt;BeanDefinition&gt;&gt; beanMap = new ConcurrentHashMap&lt;&gt;();
+
+    /**
+     * 获得类型获取bean
+     */
+    public static &lt;T&gt; T getBean(Class&lt;T&gt; bean) {
+        List&lt;BeanDefinition&gt; beanDefinitions = beanMap.get(bean);
+        if (beanDefinitions != null &amp;&amp; !beanDefinitions.isEmpty()) {
+            return (T) beanDefinitions.get(0).getInstance();
+        }
+        return null;
+    }
+
+    public static void initBeanFactory(String packageName) throws Exception {
+        // 实例化Bean
+        initBeanDefinition(packageName);
+        // 依赖注入
+        dependencyInjection();
+        log.debug(&quot;-&gt; BeanFactory初始化成功&quot;);
+    }
+
+    /**
+     * 实例化Bean
+     *
+     * @param packageName
+     * @throws Exception
+     */
+    private static void initBeanDefinition(String packageName) throws Exception {
+        log.debug(&quot;-&gt; Bean 实例化并注册 [开始]&quot;);
+        // 获取指定包名packageName下的所有带@Component注解的类
+        List&lt;Class&lt;?&gt;&gt; list = BeanUtils.findAllByAnnotation(packageName, Component.class);
+        if (list != null &amp;&amp; !list.isEmpty()) {
+            for (Class&lt;?&gt; child : list) {
+                log.debug(&quot;-&gt; register bean : {}&quot;, child.getName());
+                // 将带@Component注解的类封装成BeanDefinition
+                BeanDefinition beanDefinition = new BeanDefinition();
+                String name = child.getName();
+                beanDefinition.setBeanName(firstCharToLowerCase(name));
+                beanDefinition.setSuperClassType(child.getSuperclass());
+                Class&lt;?&gt;[] interfaces = child.getInterfaces();
+                beanDefinition.setInterfaceTypes(Arrays.asList(interfaces));
+                beanDefinition.setClassType(child);
+                beanDefinition.setInstance(child.newInstance());
+                Component component = child.getDeclaredAnnotation(Component.class);
+                beanDefinition.setPriority(component.priority());
+                // 加载到beanMap
+                addToMapAndSort(beanDefinition);
+            }
+        }
+        log.debug(&quot;-&gt; Bean 实例化并注册 [完成]&quot;);
+    }
+
+    private static void addToMapAndSort(final BeanDefinition beanDefinition) {
+        List&lt;Class&lt;?&gt;&gt; interfaceTypes = beanDefinition.getInterfaceTypes();
+        List&lt;Class&lt;?&gt;&gt; beanTypes = new ArrayList&lt;&gt;();
+        // 若实例有继承接口的，beanMap以接口类型为key，否则以当前实例类做keyk
+        if (interfaceTypes.isEmpty()) {
+            // 实现类
+            beanTypes.add(beanDefinition.getClassType());
+        } else {
+            // 所有接口
+            beanTypes.addAll(interfaceTypes);
+        }
+        // 每个接口的类型都包含该实现类
+        beanTypes.forEach(beanType -&gt; registerOne(beanType, beanDefinition));
+    }
+
+    private static void registerOne(Class&lt;?&gt; beanType, BeanDefinition beanDefinition) {
+        List&lt;BeanDefinition&gt; definitions = beanMap.computeIfAbsent(beanType, b -&gt; new CopyOnWriteArrayList&lt;&gt;());
+        definitions.add(beanDefinition);
+        definitions.sort(Comparator.comparingInt(BeanDefinition::getPriority));
+    }
+
+    /**
+     * 依赖注入
+     */
+    private static void dependencyInjection() throws IllegalAccessException {
+        log.debug(&quot;-&gt; 依赖注入 [开始]&quot;);
+        if (beanMap.isEmpty()) {
+            return;
+        }
+        // 通过已注册进beanMap中的Bean依赖注入带@Autowired注解的属性
+        Iterator&lt;Map.Entry&lt;Class&lt;?&gt;, List&lt;BeanDefinition&gt;&gt;&gt; iterator = beanMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry&lt;Class&lt;?&gt;, List&lt;BeanDefinition&gt;&gt; next = iterator.next();
+            List&lt;BeanDefinition&gt; definitions = next.getValue();
+            if (definitions != null &amp;&amp; !definitions.isEmpty()) {
+                for (BeanDefinition definition : definitions) {
+                    Object instance = definition.getInstance();
+                    if (instance != null) {
+                        // 反射设置值
+                        Field[] fields = instance.getClass().getDeclaredFields();
+                        for (Field field : fields) {
+                            Autowired autowired = field.getDeclaredAnnotation(Autowired.class);
+                            if (autowired != null) {
+                                // 开启属性的反射访问权限
+                                if (!field.isAccessible()) {
+                                    field.setAccessible(true);
+                                }
+                                Class&lt;?&gt; fieldType = field.getType();
+                                // 获取类型的实例
+                                Object bean = getBean(fieldType);
+                                if (bean == null) {
+                                    throw new BeanException(MessageFormat.format(&quot;{0} 注入属性失败, 容器中不存在 {1}&quot;,
+                                            instance.getClass().getName(), fieldType.getName()));
+                                }
+                                // 设置值
+                                field.set(instance, bean);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        log.debug(&quot;-&gt; 依赖注入 [完成]&quot;);
+    }
+
+    private static String firstCharToLowerCase(String str) {
+        return str.substring(0, 1).toLowerCase() + str.substring(1);
+    }
+}</code></pre>
+<h3 id="包扫描工具类-BeanUtils"><a href="#包扫描工具类-BeanUtils" class="headerlink" title="包扫描工具类 BeanUtils"></a>包扫描工具类 BeanUtils</h3><p>该工具类是通过当前线程的ContextClassLoader的路径拼接上指定的包路径递归获取出所有的.class文件，然后过滤带有@Component注解的.class文件进行返回。</p>
+<pre><code class="java">public class BeanUtils {
+
+    private static final String CLASS_SUFFIX = &quot;.class&quot;;
+
+    public static List&lt;Class&lt;?&gt;&gt; findAllByAnnotation(String packageName, Class&lt;? extends Annotation&gt; annotation) throws Exception {
+        Objects.requireNonNull(annotation, &quot;扫描注解异常!&quot;);
+        if (StringUtils.isEmpty(packageName)) {
+            throw new IllegalArgumentException(&quot;扫描路径异常!&quot;);
+        }
+
+        List&lt;Class&lt;?&gt;&gt; classes = new ArrayList&lt;&gt;();
+
+        String path = packageName.replace(&quot;.&quot;, &quot;/&quot;);
+
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        URL url = contextClassLoader.getResource(path);
+
+        if (url != null) {
+
+            List&lt;Class&lt;?&gt;&gt; targets = getClasses(new File(URLDecoder.decode(url.getFile(), &quot;UTF-8&quot;)), packageName);
+
+            for (Class&lt;?&gt; target : targets) {
+                if (target.getDeclaredAnnotation(annotation) != null) {
+                    classes.add(target);
+                }
+            }
+        }
+
+        return classes;
+    }
+
+    private static List&lt;Class&lt;?&gt;&gt; getClasses(File file, String packageName) throws Exception {
+        Objects.requireNonNull(file, &quot;&quot;);
+
+        File[] children = file.listFiles();
+
+        List&lt;Class&lt;?&gt;&gt; classes = new ArrayList&lt;&gt;();
+
+        for (File child : children) {
+            String name = child.getName();
+            // 文件夹递归获取
+            if (child.isDirectory()) {
+                classes.addAll(getClasses(child, packageName + &quot;.&quot; + name));
+            }
+
+            // 判断是否为class文件
+            if (name.endsWith(CLASS_SUFFIX)) {
+                String className = packageName + &quot;.&quot; + name.substring(0, name.length() - CLASS_SUFFIX.length());
+                classes.add(Class.forName(className));
+            }
+        }
+        return classes;
+    }
+
+}</code></pre>
+<p>到此核心的代码已经介绍完了。现在主要是验证下这个简单的IOC容器是否能正确的运行。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><h4 id="UserService、UserServiceImpl"><a href="#UserService、UserServiceImpl" class="headerlink" title="UserService、UserServiceImpl"></a>UserService、UserServiceImpl</h4><pre><code class="java">public interface UserService {
+
+    String findByName(int id);
+
+    JSONObject findUserRoles(int id);
+}</code></pre>
+<pre><code class="java">@Component
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private RoleService roleService;
+
+    @Override
+    public String findByName(int id) {
+        return &quot;Hello world! &quot; + id;
+    }
+
+    @Override
+    public JSONObject findUserRoles(int id) {
+        JSONObject object = new JSONObject();
+        object.put(&quot;name&quot;, findByName(id));
+        object.put(&quot;roles&quot;, roleService.findByUserId(id));
+        return object;
+    }
+
+}</code></pre>
+<h4 id="RoleService、RoleServiceImpl"><a href="#RoleService、RoleServiceImpl" class="headerlink" title="RoleService、RoleServiceImpl"></a>RoleService、RoleServiceImpl</h4><pre><code class="java">public interface RoleService {
+
+    List&lt;String&gt; findByUserId(int id);
+
+}</code></pre>
+<pre><code class="java">@Component
+public class RoleServiceImpl implements RoleService {
+
+    @Override
+    public List&lt;String&gt; findByUserId(int id) {
+        return Stream.of(&quot;超级管理员&quot;,&quot;租户管理员&quot;).collect(Collectors.toList());
+    }
+
+}</code></pre>
+<h4 id="Application测试类"><a href="#Application测试类" class="headerlink" title="Application测试类"></a>Application测试类</h4><p>UserService中使用@Autowired注入了RoleSerivce的。所以校验的时候会先执行UserService的findByName，再执行findUserRoles方法。</p>
+<p>代码实现如下</p>
+<pre><code class="java">@Slf4j
+public class Application {
+
+    public static void main(String[] args) throws Exception {
+        // 初始化bean
+        BeanFactory.initBeanFactory(Application.class.getPackage().getName());
+
+        // 获得bean并执行方法
+        UserService bean = BeanFactory.getBean(UserService.class);
+
+        // 预测返回 &quot;Hello world! 1&quot;
+        log.info(&quot;-&gt; 执行bean中的findByName()方法 : {}&quot;, bean.findByName(1));
+
+        // 预测返回 name = 1,roles = [&quot;超级管理员&quot;,&quot;租户管理员&quot;]
+        log.info(&quot;-&gt; 执行bean中的findUserRoles()方法 : {}&quot;, bean.findUserRoles(1));
+    }
+
+}</code></pre>
+<p>代码执行如下</p>
+<p><img src="/img/2020/04/17/2.png" srcset="/img/loading.gif" alt="运行结果"></p>
+<p>到此，预期的结果和运行的结果是一致的。</p>
+<hr>
+<p>这种实现的逻辑虽然没有Spring的Ioc这么强大，但起码也实现了最简单的Ioc逻辑。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Spring/">Spring</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/12/used-by-hexo-github-to-build-blog/">
+                        <span class="hidden-mobile">记录使用Hexo搭建博客</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/prettify/188.0.0/prettify.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      $('pre').each(function () {
+        const pre = $(this);
+        if (pre.find('code.mermaid').length > 0) {
+          return;
+        }
+        pre.addClass('prettyprint  linenums');
+      });
+      prettyPrint();
+    })
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "用最简单的方法仿写Spring IOC&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
